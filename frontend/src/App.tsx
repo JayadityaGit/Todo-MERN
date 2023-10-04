@@ -4,6 +4,7 @@ import { todoModel } from "./Model/TodoModel"
 import { createTodos, getTodos } from "./Network/TodoApi"
 import { Button } from "react-bootstrap"
 import Todo from "./Components/Todo"
+import EditTodo from "./Components/EditTodo"
 
 const App = () => {
 
@@ -14,8 +15,11 @@ const App = () => {
   const [inputValue, setInputValue] = useState("");
 
 
+  const[showModalUpdate, setShowModalUpdate] = useState(false)
 
 
+
+  const [taskId, setTaskId] = useState(" ")
 
   useEffect(() => {
 
@@ -46,16 +50,32 @@ const App = () => {
 
       <div className={styles.mainBox}>
 
+      {showModalUpdate&&<EditTodo taskId={taskId} onDismiss = {()=>{setShowModalUpdate(false)}} changeTodos = {(newTodos: todoModel)=>{
+        const newArray = todos.map((value)=>{
+             
+
+          if(value._id === newTodos._id){
+            return newTodos;
+          }
+          
+          return value;
+        })
+
+        setTodos(newArray)
+      }}/>}
+
         <h1>Todo App</h1>
 
         <div className="">
-           <input type="text" onChange={(event)=>{setInputValue(event.target.value)}}/>
+           <input type="text" value={inputValue} onChange={(event)=>{setInputValue(event.target.value)}}/>
            <Button variant="light" onClick={async()=>{
 
                try {
                 const newTodo = await createTodos(inputValue);
 
                 setTodos([...todos, newTodo])
+
+                setInputValue("")
 
 
                 
@@ -73,7 +93,7 @@ const App = () => {
         <div>
           {
             todos.map((todo)=>{
-              return <Todo key={todo._id} whole={todo} task={todo.task} id={todo._id} remove={(delteTodo: todoModel)=>{
+              return <Todo key={todo._id} whole={todo} task={todo.task} id={todo._id} placeId={(id: string)=>{setTaskId(id)}} onDismiss={()=>{setShowModalUpdate(true)}} remove={(delteTodo: todoModel)=>{
                 setTodos(prevArray => prevArray.filter(element => element !== delteTodo))
               }}/>
             })
@@ -81,6 +101,8 @@ const App = () => {
         </div>
 
       </div>
+
+      
 
     </div>
   )
