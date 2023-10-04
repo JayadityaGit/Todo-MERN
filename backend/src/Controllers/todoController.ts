@@ -1,7 +1,7 @@
 import { RequestHandler } from "express";
 import createHttpError from "http-errors";
 import todoModel from "../Model/todoModel";
-import { todo } from "../Model/todo";
+
 import { isValidObjectId } from "mongoose";
 
 export const getTodos: RequestHandler  = async(req, res, next)=>{
@@ -11,6 +11,32 @@ export const getTodos: RequestHandler  = async(req, res, next)=>{
     //throw createHttpError(400, "server has stopped by the author")
     
     const response = await todoModel.find().exec();
+
+    if(!response){
+        throw createHttpError(400, "server could not fetch data from the database")
+    }
+
+    res.status(200).json(response)
+    } catch (error) {
+        next(error)
+    }
+    
+}
+
+export const getTodo: RequestHandler  = async(req, res, next)=>{
+
+    try {
+
+    //throw createHttpError(400, "server has stopped by the author")
+
+    const todoId = req.params.todoId;
+
+    if(!isValidObjectId(todoId)){
+        throw createHttpError(400, "provide a valid id")
+    }
+
+    
+    const response = await todoModel.findById(todoId);
 
     if(!response){
         throw createHttpError(400, "server could not fetch data from the database")
@@ -59,7 +85,7 @@ interface updateParams {
     todoId: string
 }
 
-export const updateTodos: RequestHandler<updateParams, todo[], inputTodo, unknown>  = async(req, res, next)=>{
+export const updateTodos: RequestHandler = async(req, res, next)=>{
 
     try {
 
@@ -81,11 +107,9 @@ export const updateTodos: RequestHandler<updateParams, todo[], inputTodo, unknow
         task: newTask
     })
 
-    if(!response){
-        throw createHttpError(404, "server could not update the todo" )
-    }
+     
+    res.status(200).json(response)
 
-    res.sendStatus(200)
    
     } catch (error) {
         next(error)

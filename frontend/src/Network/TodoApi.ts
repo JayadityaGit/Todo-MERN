@@ -26,6 +26,12 @@ export async function getTodos() {
     
   }
 
+export async function getTodo(todoId: string) {
+    const response = await ErrorFetchData("/api/todos/"+todoId, {method: "GET"})
+
+    return response.json()
+}
+
 
 
 export async function createTodos(inputValue: string) :Promise<todoModel>  {
@@ -44,6 +50,24 @@ export async function createTodos(inputValue: string) :Promise<todoModel>  {
     return response.json()
 
 }
+
+export async function updateTodos(id: string, newTask: string) {
+
+    const response = await ErrorFetchData("/api/todos/"+id, {
+        method:"PATCH",
+
+        headers: {
+            'Content-type': 'application/json; charset=UTF-8',
+          },
+
+          body:JSON.stringify({task: newTask})
+
+    })
+
+    return response.json()
+    
+}
+
 
 
 export async function deleteTodos(todoId: string) {
