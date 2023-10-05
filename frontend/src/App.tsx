@@ -5,6 +5,7 @@ import { createTodos, getTodos } from "./Network/TodoApi"
 import { Button } from "react-bootstrap"
 import Todo from "./Components/Todo"
 import EditTodo from "./Components/EditTodo"
+import loader from"./Pics/loader.gif"
 
 const App = () => {
 
@@ -18,6 +19,8 @@ const App = () => {
   const[showModalUpdate, setShowModalUpdate] = useState(false)
 
 
+  const [loading, setLoading] = useState(false)
+
 
   const [taskId, setTaskId] = useState(" ")
 
@@ -26,9 +29,21 @@ const App = () => {
     async function get() {
 
       try {
+
+        
+
+
+        
+
         const response = await getTodos();
 
+        if(response){
+          setLoading(false)
+        }
+
         setTodos(response)
+
+       
 
       
       } catch (error) {
@@ -39,10 +54,26 @@ const App = () => {
     
       
     }
+
+    setLoading(true)
+
+    get();
     
-    get()
+  
     
   }, [])
+
+  const mainTodos = 
+  
+  <div>
+  {
+    todos.map((todo)=>{
+      return <Todo key={todo._id} whole={todo} task={todo.task} id={todo._id} placeId={(id: string)=>{setTaskId(id)}} onDismiss={()=>{setShowModalUpdate(true)}} remove={(delteTodo: todoModel)=>{
+        setTodos(prevArray => prevArray.filter(element => element !== delteTodo))
+      }}/>
+    })
+  }
+</div>
   
 
   return (
@@ -89,16 +120,20 @@ const App = () => {
            }}>Add Task</Button>
         </div>
 
+     
 
-        <div>
-          {
-            todos.map((todo)=>{
-              return <Todo key={todo._id} whole={todo} task={todo.task} id={todo._id} placeId={(id: string)=>{setTaskId(id)}} onDismiss={()=>{setShowModalUpdate(true)}} remove={(delteTodo: todoModel)=>{
-                setTodos(prevArray => prevArray.filter(element => element !== delteTodo))
-              }}/>
-            })
-          }
-        </div>
+     {loading===false? mainTodos :  <div>
+      
+      
+      
+      <img src={loader} width={"300px"} height={"300px"} alt="loader"/>
+     
+       <p>Loading todos please wait</p>
+     
+     
+     </div> }
+
+        
 
       </div>
 
